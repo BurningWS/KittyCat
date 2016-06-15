@@ -12,18 +12,15 @@ import java.net.Socket;
  */
 public class HttpServer {
 
-    public static String WEB_ROOT = System.getProperty("user.dir");
-    public static String SHUT_DOWN_COMMAND = "shutdown";
-
 
     public static void main(String[] args) throws IOException {
-        await();
+        new HttpServer().await();
     }
 
     @Setter
     private static boolean shutdown = false;
 
-    private static void await() {
+    private void await() {
         ServerSocket ss = null;
         try {
             ss = new ServerSocket(8088);
@@ -41,7 +38,9 @@ public class HttpServer {
 
                 Response response = new Response(socket);
                 response.setRequest(request);
-                response.sendStaticResource();
+
+                StaticResourceProcessor staticResourceProcessor = new StaticResourceProcessor();
+                staticResourceProcessor.process(request, response);
 
                 socket.close();
                 System.out.println(request.getUri());

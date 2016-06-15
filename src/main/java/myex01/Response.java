@@ -2,13 +2,16 @@ package myex01;
 
 import lombok.Setter;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.ServletResponse;
 import java.io.*;
 import java.net.Socket;
+import java.util.Locale;
 
 /**
  * Created by wangsong09 on 2016/6/14.
  */
-public class Response {
+public class Response implements ServletResponse {
 
     private Socket socket;
 
@@ -27,15 +30,15 @@ public class Response {
             printWriter = new PrintWriter(new OutputStreamWriter(outputStream, "gbk"), true);
 
             String uri = request.getUri();
-            if ("shutdown".equalsIgnoreCase(HttpServer.SHUT_DOWN_COMMAND)) {
+            if (Constants.SHUT_DOWN_COMMAND.equalsIgnoreCase(uri)) {
+                HttpServer.setShutdown(true);
                 printWriter.println("关闭服务器");
-                printWriter.close();
-                System.exit(1);
+                return;
             }
 
-            System.out.println("请求文件路径：" + HttpServer.WEB_ROOT + uri);
+            System.out.println("请求文件路径：" + Constants.WEB_ROOT + uri);
 
-            File file = new File(HttpServer.WEB_ROOT, uri);
+            File file = new File(Constants.WEB_ROOT, uri);
 
             if (file.isFile()) {
                 BufferedReader br = new BufferedReader(new FileReader(file));
@@ -59,4 +62,78 @@ public class Response {
         }
     }
 
+    @Override
+    public String getCharacterEncoding() {
+        return null;
+    }
+
+    @Override
+    public String getContentType() {
+        return null;
+    }
+
+    @Override
+    public ServletOutputStream getOutputStream() throws IOException {
+        return null;
+    }
+
+    @Override
+    public PrintWriter getWriter() throws IOException {
+        return null;
+    }
+
+    @Override
+    public void setCharacterEncoding(String charset) {
+
+    }
+
+    @Override
+    public void setContentLength(int len) {
+
+    }
+
+    @Override
+    public void setContentType(String type) {
+
+    }
+
+    @Override
+    public void setBufferSize(int size) {
+
+    }
+
+    @Override
+    public int getBufferSize() {
+        return 0;
+    }
+
+    @Override
+    public void flushBuffer() throws IOException {
+
+    }
+
+    @Override
+    public void resetBuffer() {
+
+    }
+
+    @Override
+    public boolean isCommitted() {
+        return false;
+    }
+
+    @Override
+    public void reset() {
+
+    }
+
+    @Override
+    public void setLocale(Locale loc) {
+
+    }
+
+    @Override
+    public Locale getLocale() {
+        return null;
+    }
 }

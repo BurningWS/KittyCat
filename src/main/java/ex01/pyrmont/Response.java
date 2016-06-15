@@ -1,5 +1,7 @@
 package ex01.pyrmont;
 
+import lombok.Setter;
+
 import java.io.OutputStream;
 import java.io.IOException;
 import java.io.FileInputStream;
@@ -16,6 +18,7 @@ import java.io.File;
 public class Response {
 
   private static final int BUFFER_SIZE = 1024;
+  @Setter
   Request request;
   OutputStream output;
 
@@ -23,9 +26,6 @@ public class Response {
     this.output = output;
   }
 
-  public void setRequest(Request request) {
-    this.request = request;
-  }
 
   public void sendStaticResource() throws IOException {
     byte[] bytes = new byte[BUFFER_SIZE];
