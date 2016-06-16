@@ -39,13 +39,21 @@ public class HttpServer {
                 Response response = new Response(socket);
                 response.setRequest(request);
 
-                StaticResourceProcessor staticResourceProcessor = new StaticResourceProcessor();
-                staticResourceProcessor.process(request, response);
+                String uri = request.getUri();
+
+                //动态资源处理
+                if (uri != null && uri.startsWith("/servlet/")) {
+                    ServletProcessor servletProcessor1 = new ServletProcessor();
+                    servletProcessor1.process(request, response);
+                } else {
+                    //静态资源处理
+                    StaticResourceProcessor staticResourceProcessor = new StaticResourceProcessor();
+                    staticResourceProcessor.process(request, response);
+                }
 
                 socket.close();
-                System.out.println(request.getUri());
                 System.out.println("===应答结束==");
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

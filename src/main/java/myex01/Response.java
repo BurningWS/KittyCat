@@ -30,27 +30,30 @@ public class Response implements ServletResponse {
             printWriter = new PrintWriter(new OutputStreamWriter(outputStream, "gbk"), true);
 
             String uri = request.getUri();
+
             if (Constants.SHUT_DOWN_COMMAND.equalsIgnoreCase(uri)) {
                 HttpServer.setShutdown(true);
                 printWriter.println("关闭服务器");
                 return;
             }
 
-            System.out.println("请求文件路径：" + Constants.WEB_ROOT + uri);
+            if (uri != null) {
 
-            File file = new File(Constants.WEB_ROOT, uri);
+                System.out.println("请求文件路径：" + Constants.WEB_ROOT + uri);
 
-            if (file.isFile()) {
-                BufferedReader br = new BufferedReader(new FileReader(file));
-                while (br.ready()) {
-                    printWriter.println(br.readLine());
+                File file = new File(Constants.WEB_ROOT, uri);
+                if (file.isFile()) {
+                    BufferedReader br = new BufferedReader(new FileReader(file));
+                    while (br.ready()) {
+                        printWriter.println(br.readLine());
+                    }
+                    return;
                 }
-            } else {
-                printWriter.println("HTTP/1.1 404 File Not Found");
-                printWriter.println();
-                Thread.sleep(3000);
-                printWriter.println("<h1>File Not Found</h1>");
             }
+            printWriter.println("HTTP/1.1 404 File Not Found");
+            printWriter.println();
+            Thread.sleep(3000);
+            printWriter.println("<h1>File Not Found</h1>");
 
         } catch (Exception e) {
 
@@ -79,7 +82,8 @@ public class Response implements ServletResponse {
 
     @Override
     public PrintWriter getWriter() throws IOException {
-        return null;
+        OutputStream outputStream = socket.getOutputStream();
+        return new PrintWriter(new OutputStreamWriter(outputStream, "gbk"), true);
     }
 
     @Override
