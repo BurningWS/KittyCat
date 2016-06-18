@@ -1,4 +1,4 @@
-package myex01;
+package ws.http;
 
 
 import util.FacadeInvocationHandler;
@@ -18,8 +18,8 @@ import java.net.URLClassLoader;
  */
 public class ServletProcessor {
 
-    public void process(Request request, Response response) {
-        String uri = request.getUri();
+    public void process(HttpRequest httpRequest, HttpResponse httpResponse) {
+        String uri = httpRequest.getUri();
         String servletName = "test." + uri.substring(uri.lastIndexOf('/') + 1);
         System.out.println("servletName:" + servletName);
 
@@ -37,8 +37,8 @@ public class ServletProcessor {
 
             Class<?> servletClass = urlClassLoader.loadClass(servletName);
 
-            ServletRequest requestFacade = (ServletRequest) new FacadeInvocationHandler(request, ServletRequest.class).getProxy();
-            ServletResponse responseFacade = (ServletResponse) new FacadeInvocationHandler(response, ServletResponse.class).getProxy();
+            ServletRequest requestFacade = (ServletRequest) new FacadeInvocationHandler(httpRequest, ServletRequest.class).getProxy();
+            ServletResponse responseFacade = (ServletResponse) new FacadeInvocationHandler(httpResponse, ServletResponse.class).getProxy();
 
             Servlet s = (Servlet) servletClass.newInstance();
             s.service(requestFacade, responseFacade);

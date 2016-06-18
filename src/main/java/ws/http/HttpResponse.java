@@ -1,24 +1,27 @@
-package myex01;
+package ws.http;
 
 import lombok.Setter;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.Socket;
+import java.util.Collection;
 import java.util.Locale;
 
 /**
  * Created by wangsong09 on 2016/6/14.
  */
-public class Response implements ServletResponse {
+public class HttpResponse implements HttpServletResponse {
 
     private Socket socket;
 
     @Setter
-    private Request request;
+    private HttpRequest httpRequest;
 
-    public Response(Socket socket) {
+    public HttpResponse(Socket socket) {
         this.socket = socket;
     }
 
@@ -29,10 +32,10 @@ public class Response implements ServletResponse {
             outputStream = socket.getOutputStream();
             printWriter = new PrintWriter(new OutputStreamWriter(outputStream, "gbk"), true);
 
-            String uri = request.getUri();
+            String uri = httpRequest.getUri();
 
             if (Constants.SHUT_DOWN_COMMAND.equalsIgnoreCase(uri)) {
-                HttpServer.setShutdown(true);
+                HttpConnector.setStopped(true);
                 printWriter.println("关闭服务器");
                 return;
             }
@@ -138,6 +141,111 @@ public class Response implements ServletResponse {
 
     @Override
     public Locale getLocale() {
+        return null;
+    }
+
+    @Override
+    public void addCookie(Cookie cookie) {
+
+    }
+
+    @Override
+    public boolean containsHeader(String name) {
+        return false;
+    }
+
+    @Override
+    public String encodeURL(String url) {
+        return null;
+    }
+
+    @Override
+    public String encodeRedirectURL(String url) {
+        return null;
+    }
+
+    @Override
+    public String encodeUrl(String url) {
+        return null;
+    }
+
+    @Override
+    public String encodeRedirectUrl(String url) {
+        return null;
+    }
+
+    @Override
+    public void sendError(int sc, String msg) throws IOException {
+
+    }
+
+    @Override
+    public void sendError(int sc) throws IOException {
+
+    }
+
+    @Override
+    public void sendRedirect(String location) throws IOException {
+
+    }
+
+    @Override
+    public void setDateHeader(String name, long date) {
+
+    }
+
+    @Override
+    public void addDateHeader(String name, long date) {
+
+    }
+
+    @Override
+    public void setHeader(String name, String value) {
+
+    }
+
+    @Override
+    public void addHeader(String name, String value) {
+
+    }
+
+    @Override
+    public void setIntHeader(String name, int value) {
+
+    }
+
+    @Override
+    public void addIntHeader(String name, int value) {
+
+    }
+
+    @Override
+    public void setStatus(int sc) {
+
+    }
+
+    @Override
+    public void setStatus(int sc, String sm) {
+
+    }
+
+    @Override
+    public int getStatus() {
+        return 0;
+    }
+
+    @Override
+    public String getHeader(String name) {
+        return null;
+    }
+
+    @Override
+    public Collection<String> getHeaders(String name) {
+        return null;
+    }
+
+    @Override
+    public Collection<String> getHeaderNames() {
         return null;
     }
 }

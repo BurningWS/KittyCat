@@ -1,7 +1,5 @@
 package test;
 
-import myex01.Request;
-
 import javax.servlet.*;
 import java.io.IOException;
 import java.io.PrintWriter;
