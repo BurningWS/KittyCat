@@ -28,12 +28,12 @@ public class HttpProcessor {
             String uri = httpRequest.getUri();
             //动态资源处理
             if (uri != null && uri.startsWith("/servlet/")) {
-                ServletProcessor servletProcessor = new ServletProcessor();
-                servletProcessor.process(httpRequest, httpResponse);
+                ServletProcessor processor = new ServletProcessor();
+                processor.process(httpRequest, httpResponse);
             } else {
                 //静态资源处理
-                StaticResourceProcessor staticResourceProcessor = new StaticResourceProcessor();
-                staticResourceProcessor.process(httpRequest, httpResponse);
+                StaticResourceProcessor processor = new StaticResourceProcessor();
+                processor.process(httpRequest, httpResponse);
             }
 
             socket.close();
