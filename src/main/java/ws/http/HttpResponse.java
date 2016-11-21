@@ -30,7 +30,7 @@ public class HttpResponse implements HttpServletResponse {
         PrintWriter printWriter = null;
         try {
             outputStream = socket.getOutputStream();
-            printWriter = new PrintWriter(new OutputStreamWriter(outputStream, "gbk"), true);
+            printWriter = getWriter();
 
             String uri = httpRequest.getUri();
 
@@ -55,7 +55,6 @@ public class HttpResponse implements HttpServletResponse {
             }
             printWriter.println("HTTP/1.1 404 File Not Found");
             printWriter.println();
-            Thread.sleep(3000);
             printWriter.println("<h1>File Not Found</h1>");
 
         } catch (Exception e) {
@@ -86,7 +85,7 @@ public class HttpResponse implements HttpServletResponse {
     @Override
     public PrintWriter getWriter() throws IOException {
         OutputStream outputStream = socket.getOutputStream();
-        return new PrintWriter(new OutputStreamWriter(outputStream, "gbk"), true);
+        return new PrintWriter(new OutputStreamWriter(outputStream, "utf-8"), true);
     }
 
     @Override

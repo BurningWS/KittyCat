@@ -2,6 +2,7 @@ package test;
 
 import javax.servlet.*;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
 /**
@@ -23,6 +24,7 @@ public class TestServlet implements Servlet {
         System.out.println("**********GET INTO TestServlet*************");
         System.out.println("代理类:" + req + "|类加载器:" + req.getClass().getClassLoader());
         PrintWriter pw = res.getWriter();
+
         pw.print("TestServlet正在处理");
         pw.close();
     }
