@@ -3,7 +3,6 @@ package ws.http;
 import lombok.Setter;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -56,6 +55,7 @@ public class HttpResponse implements HttpServletResponse {
             printWriter.println("HTTP/1.1 404 File Not Found");
             printWriter.println();
             printWriter.println("<h1>File Not Found</h1>");
+            System.out.println("uri:" + uri + "  拒绝");
 
         } catch (Exception e) {
 

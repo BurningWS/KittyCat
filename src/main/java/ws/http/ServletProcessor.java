@@ -7,7 +7,6 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -23,11 +22,12 @@ public class ServletProcessor {
         String servletName = "test." + uri.substring(uri.lastIndexOf('/') + 1);
         System.out.println("servletName:" + servletName);
 
-        String classPath = Constants.WEB_ROOT + File.separator + "target\\classes";
-        System.out.println("classPath:" + classPath);
+        //String classPath = Constants.WEB_ROOT + File.separator + "target\\classes";
+        //URL[] urls = {new URL("file", null, classPath)};
+        URL url = this.getClass().getClassLoader().getResource("/");
+        System.out.println(url);
         try {
-            URL[] urls = {new URL("file", null, classPath)};
-            URLClassLoader urlClassLoader = new URLClassLoader(urls);
+            URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{url});
 
             //输出类加载器
             /*for (ClassLoader cur = urlClassLoader, parent; cur != null; cur = parent) {
