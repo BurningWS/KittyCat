@@ -1,7 +1,9 @@
-package ws.http;
+package ws;
 
 
 import util.FacadeInvocationHandler;
+import ws.http.HttpRequest;
+import ws.http.HttpResponse;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -18,7 +20,7 @@ import java.net.URLClassLoader;
 public class ServletProcessor {
 
     public void process(HttpRequest httpRequest, HttpResponse httpResponse) {
-        String uri = httpRequest.getUri();
+        String uri = httpRequest.getRequestURI();
         String servletName = "test." + uri.substring(uri.lastIndexOf('/') + 1);
         System.out.println("servletName:" + servletName);
 

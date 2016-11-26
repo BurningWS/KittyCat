@@ -10,7 +10,7 @@ import java.net.Socket;
 /**
  * Created by wangsong09 on 2016/6/14.
  */
-public class HttpConnector implements Runnable{
+public class HttpConnector implements Runnable {
 
     @Setter
     private static boolean stopped = false;
@@ -30,7 +30,7 @@ public class HttpConnector implements Runnable{
                 Socket socket = ss.accept(); //注意并发
                 System.out.println("===有请求===");
 
-                new HttpProcessor(socket).process();
+                new HttpProcessor(this).process(socket);
             } catch (Exception e) {
                 e.printStackTrace();
             }

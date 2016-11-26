@@ -9,4 +9,10 @@ public class Constants {
 
     public static String SHUT_DOWN_COMMAND = "/shutdown";
 
+    public static final String Package = "ws.http";
+
+    public static final int DEFAULT_CONNECTION_TIMEOUT = 60000;
+    public static final int PROCESSOR_IDLE = 0;
+    public static final int PROCESSOR_ACTIVE = 1;
+
 }

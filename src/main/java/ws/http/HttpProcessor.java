@@ -1,9 +1,13 @@
 package ws.http;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import org.apache.catalina.util.RequestUtil;
+import org.apache.catalina.util.StringManager;
+import ws.ServletProcessor;
+import ws.StaticResourceProcessor;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import java.io.*;
 import java.net.Socket;
 
 /**
@@ -11,29 +15,57 @@ import java.net.Socket;
  */
 public class HttpProcessor {
 
-    private Socket socket;
-
-    public HttpProcessor(Socket socket) {
-        this.socket = socket;
+    public HttpProcessor(HttpConnector connector) {
+        this.connector = connector;
     }
 
-    public void process() {
+    private HttpConnector connector;
+
+    private HttpRequestLine requestLine = new HttpRequestLine();  //请求行
+    private HttpRequest request;
+    private HttpResponse response;
+
+    protected String method = null;
+
+    /**
+     * The string manager for this package.
+     */
+    protected StringManager sm =
+            StringManager.getManager("ws.http");
+
+    public void process(Socket socket) throws ServletException {
         try {
-            HttpRequest httpRequest = new HttpRequest(socket);
-            HttpResponse httpResponse = new HttpResponse(socket);
-            httpResponse.setHttpRequest(httpRequest);
 
-            parse(httpRequest, httpResponse);
+            //BufferedInputStream bufInput = new BufferedInputStream(socket.getInputStream());
+            //new ByteArrayInputStream(new byte[2048]);
+            //InputStream clone = socket.getInputStream();
 
-            String uri = httpRequest.getUri();
+            SocketInputStream input = new SocketInputStream(socket.getInputStream(), 2048);
+            OutputStream output = socket.getOutputStream();
+
+            request = new HttpRequest(input);
+            response = new HttpResponse(output);
+            response.setRequest(request);
+            response.setHeader("Server", "Pyrmont Servlet Container");
+
+            parseRequest(input, output); //解析请求方法，设置request参数
+            parseHeaders(input); //解析请求头，设置request参数
+
+            //HttpRequest httpRequest = new HttpRequest(socket);
+            //HttpResponse httpResponse = new HttpResponse(socket);
+            //httpResponse.setHttpRequest(httpRequest);
+
+            printRequestLines(request, socket);
+
+            String uri = request.getRequestURI();
             //动态资源处理
             if (uri != null && uri.startsWith("/servlet/")) {
                 ServletProcessor processor = new ServletProcessor();
-                processor.process(httpRequest, httpResponse);
+                processor.process(request, response);
             } else {
                 //静态资源处理
                 StaticResourceProcessor processor = new StaticResourceProcessor();
-                processor.process(httpRequest, httpResponse);
+                processor.process(request, response);
             }
 
             socket.close();
@@ -43,23 +75,244 @@ public class HttpProcessor {
         }
     }
 
-    public void parse(HttpRequest httpRequest, HttpResponse httpResponse) {
+
+    /**
+     * 解析请求头
+     * This method is the simplified version of the similar method in
+     * org.apache.catalina.connector.http.HttpProcessor.
+     * However, this method only parses some "easy" headers, such as
+     * "cookie", "content-length", and "content-type", and ignore other headers.
+     *
+     * @param input The input stream connected to our socket
+     * @throws IOException      if an input/output error occurs
+     * @throws ServletException if a parsing error occurs
+     */
+    private void parseHeaders(SocketInputStream input)
+            throws IOException, ServletException {
+        while (true) {
+            HttpHeader header = new HttpHeader();
+
+            // Read the next header
+            input.readHeader(header);  //读取一个header
+            if (header.nameEnd == 0) {
+                if (header.valueEnd == 0) {
+                    return;
+                } else {
+                    throw new ServletException
+                            (sm.getString("httpProcessor.parseHeaders.colon"));
+                }
+            }
+
+            String name = new String(header.name, 0, header.nameEnd);
+            String value = new String(header.value, 0, header.valueEnd);
+            request.addHeader(name, value);
+            // do something for some headers, ignore others.
+            if (name.equals("cookie")) {
+                Cookie cookies[] = RequestUtil.parseCookieHeader(value);
+                for (int i = 0; i < cookies.length; i++) {
+                    if (cookies[i].getName().equals("jsessionid")) {
+                        // Override anything requested in the URL
+                        if (!request.isRequestedSessionIdFromCookie()) {
+                            // Accept only the first session id cookie
+                            request.setRequestedSessionId(cookies[i].getValue());
+                            request.setRequestedSessionCookie(true);
+                            request.setRequestedSessionURL(false);
+                        }
+                    }
+                    request.addCookie(cookies[i]);
+                }
+            } else if (name.equals("content-length")) {
+                int n = -1;
+                try {
+                    n = Integer.parseInt(value);
+                } catch (Exception e) {
+                    throw new ServletException(sm.getString("httpProcessor.parseHeaders.contentLength"));
+                }
+                request.setContentLength(n);
+            } else if (name.equals("content-type")) {
+                request.setContentType(value);
+            }
+        } //end while
+    }
+
+
+    //解析请求方法 POST /examples/default.jsp HTTP/1.1
+    private void parseRequest(SocketInputStream input, OutputStream output)
+            throws IOException, ServletException {
+
+        // Parse the incoming request line
+        input.readRequestLine(requestLine); //解析请求方法
+        String method =
+                new String(requestLine.method, 0, requestLine.methodEnd);
+        String uri = null;
+        String protocol = new String(requestLine.protocol, 0, requestLine.protocolEnd);
+
+        // Validate the incoming request line
+        if (method.length() < 1) {
+            throw new ServletException("Missing HTTP request method");
+        } else if (requestLine.uriEnd < 1) {
+            throw new ServletException("Missing HTTP request URI");
+        }
+        // Parse any query parameters out of the request URI
+        int question = requestLine.indexOf("?");
+        if (question >= 0) {
+            request.setQueryString(new String(requestLine.uri, question + 1,
+                    requestLine.uriEnd - question - 1));
+            uri = new String(requestLine.uri, 0, question);
+        } else {
+            request.setQueryString(null);
+            uri = new String(requestLine.uri, 0, requestLine.uriEnd);
+        }
+
+
+        // Checking for an absolute URI (with the HTTP protocol)
+        if (!uri.startsWith("/")) {
+            int pos = uri.indexOf("://");
+            // Parsing out protocol and host name
+            if (pos != -1) {
+                pos = uri.indexOf('/', pos + 3);
+                if (pos == -1) {
+                    uri = "";
+                } else {
+                    uri = uri.substring(pos);
+                }
+            }
+        }
+
+        // Parse any requested session ID out of the request URI
+        String match = ";jsessionid=";
+        int semicolon = uri.indexOf(match);
+        if (semicolon >= 0) {
+            String rest = uri.substring(semicolon + match.length());
+            int semicolon2 = rest.indexOf(';');
+            if (semicolon2 >= 0) {
+                request.setRequestedSessionId(rest.substring(0, semicolon2));
+                rest = rest.substring(semicolon2);
+            } else {
+                request.setRequestedSessionId(rest);
+                rest = "";
+            }
+            request.setRequestedSessionURL(true);
+            uri = uri.substring(0, semicolon) + rest;
+        } else {
+            request.setRequestedSessionId(null);
+            request.setRequestedSessionURL(false);
+        }
+
+        // Normalize URI (using String operations at the moment)
+        String normalizedUri = normalize(uri);
+
+        // Set the corresponding request properties
+        ((HttpRequest) request).setMethod(method);
+        request.setProtocol(protocol);
+        if (normalizedUri != null) {
+            ((HttpRequest) request).setRequestURI(normalizedUri);
+        } else {
+            ((HttpRequest) request).setRequestURI(uri);
+        }
+
+        if (normalizedUri == null) {
+            throw new ServletException("Invalid URI: " + uri + "'");
+        }
+    }
+
+    /**
+     * Return a context-relative path, beginning with a "/", that represents
+     * the canonical version of the specified path after ".." and "." elements
+     * are resolved out.  If the specified path attempts to go outside the
+     * boundaries of the current context (i.e. too many ".." path elements
+     * are present), return <code>null</code> instead.
+     *
+     * @param path Path to be normalized
+     */
+    protected String normalize(String path) {
+        if (path == null)
+            return null;
+        // Create a place for the normalized path
+        String normalized = path;
+
+        // Normalize "/%7E" and "/%7e" at the beginning to "/~"
+        if (normalized.startsWith("/%7E") || normalized.startsWith("/%7e"))
+            normalized = "/~" + normalized.substring(4);
+
+        // Prevent encoding '%', '/', '.' and '\', which are special reserved
+        // characters
+        if ((normalized.indexOf("%25") >= 0)
+                || (normalized.indexOf("%2F") >= 0)
+                || (normalized.indexOf("%2E") >= 0)
+                || (normalized.indexOf("%5C") >= 0)
+                || (normalized.indexOf("%2f") >= 0)
+                || (normalized.indexOf("%2e") >= 0)
+                || (normalized.indexOf("%5c") >= 0)) {
+            return null;
+        }
+
+        if (normalized.equals("/."))
+            return "/";
+
+        // Normalize the slashes and add leading slash if necessary
+        if (normalized.indexOf('\\') >= 0)
+            normalized = normalized.replace('\\', '/');
+        if (!normalized.startsWith("/"))
+            normalized = "/" + normalized;
+
+        // Resolve occurrences of "//" in the normalized path
+        while (true) {
+            int index = normalized.indexOf("//");
+            if (index < 0)
+                break;
+            normalized = normalized.substring(0, index) +
+                    normalized.substring(index + 1);
+        }
+
+        // Resolve occurrences of "/./" in the normalized path
+        while (true) {
+            int index = normalized.indexOf("/./");
+            if (index < 0)
+                break;
+            normalized = normalized.substring(0, index) +
+                    normalized.substring(index + 2);
+        }
+
+        // Resolve occurrences of "/../" in the normalized path
+        while (true) {
+            int index = normalized.indexOf("/../");
+            if (index < 0)
+                break;
+            if (index == 0)
+                return (null);  // Trying to go outside our context
+            int index2 = normalized.lastIndexOf('/', index - 1);
+            normalized = normalized.substring(0, index2) +
+                    normalized.substring(index + 3);
+        }
+
+        // Declare occurrences of "/..." (three or more dots) to be invalid
+        // (on some Windows platforms this walks the directory tree!!!)
+        if (normalized.indexOf("/...") >= 0)
+            return (null);
+
+        // Return the normalized path that we have completed
+        return (normalized);
+
+    }
+
+    public void printRequestLines(HttpRequest request, Socket socket) {
         try {
 
             System.out.println("处理端口号：" + socket.getPort());
             System.out.println("服务端口号：" + socket.getLocalPort());
 
-            //请求信息都写入inputstram里了
-            InputStream inputStream = socket.getInputStream();
-
+            //请求信息都写入inputstream里了
+            //InputStream inputStream = socket.getInputStream();
+            InputStream inputStream = request.getStream();
+            inputStream.reset();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
             //打印请求
             for (boolean first = true; bufferedReader.ready(); ) {
-                String str = bufferedReader.readLine();
+                String str = bufferedReader.readLine(); //这里阻塞：
                 if (first) {
                     String uri = str.split(" ")[1];  //从请求头获取uri
-                    httpRequest.setUri(uri);
                     first = false;
                 }
                 System.out.println(str);
