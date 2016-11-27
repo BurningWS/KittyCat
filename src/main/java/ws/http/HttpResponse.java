@@ -1,7 +1,6 @@
 package ws.http;
 
 
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -66,7 +65,12 @@ public class HttpResponse implements HttpServletResponse {
 
 
     public HttpResponse(OutputStream output) {
+        this(output, "utf-8");  //默认utf-8编码
+    }
+
+    public HttpResponse(OutputStream output, String encoding) {
         this.output = output;
+        this.encoding = encoding;
     }
 
     /**
@@ -289,34 +293,43 @@ public class HttpResponse implements HttpServletResponse {
 
     /* This method is used to serve a static page */
     public void sendStaticResource() throws IOException {
-        byte[] bytes = new byte[BUFFER_SIZE];
-        FileInputStream fis = null;
+        PrintWriter printWriter = null;
         try {
-      /* request.getUri has been replaced by request.getRequestURI */
-            File file = new File(Constants.WEB_ROOT, request.getRequestURI());
-            fis = new FileInputStream(file);
-      /*
-         HTTP Response = Status-Line
-           *(( general-header | response-header | entity-header ) CRLF)
-           CRLF
-           [ message-body ]
-         Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
-      */
-            int ch = fis.read(bytes, 0, BUFFER_SIZE);
-            while (ch != -1) {
-                output.write(bytes, 0, ch);
-                ch = fis.read(bytes, 0, BUFFER_SIZE);
+            printWriter = getWriter();
+            String uri = request.getRequestURI();
+
+            if (Constants.SHUT_DOWN_COMMAND.equalsIgnoreCase(uri)) {
+                HttpConnector.setStopped(true);
+                printWriter.println("关闭服务器");
+                return;
             }
-        } catch (FileNotFoundException e) {
-            String errorMessage = "HTTP/1.1 404 File Not Found\r\n" +
-                    "Content-Type: text/html\r\n" +
-                    "Content-Length: 23\r\n" +
-                    "\r\n" +
-                    "<h1>File Not Found</h1>";
-            output.write(errorMessage.getBytes());
+
+            if (uri != null) {
+
+                System.out.println("请求文件路径：" + Constants.WEB_ROOT + uri);
+
+                File file = new File(Constants.WEB_ROOT, uri);
+                if (file.isFile()) {
+                    BufferedReader br = new BufferedReader(new FileReader(file));
+                    while (br.ready()) {
+                        printWriter.println(br.readLine());
+                    }
+                    return;
+                }
+            }
+            printWriter.println("HTTP/1.1 404 File Not Found");
+            printWriter.println("Content-Type: text/html");
+            printWriter.println("Content-Length: 23");
+            printWriter.println(); //中间有空行
+            printWriter.println("<h1>File Not Found</h1>");
+            System.out.println("uri:" + uri + "  没有找到");
+
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
-            if (fis != null)
-                fis.close();
+            if (printWriter != null) {
+                printWriter.close();
+            }
         }
     }
 

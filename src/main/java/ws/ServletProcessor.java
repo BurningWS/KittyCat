@@ -26,7 +26,7 @@ public class ServletProcessor {
 
         //String classPath = Constants.WEB_ROOT + File.separator + "target\\classes";
         //URL[] urls = {new URL("file", null, classPath)};
-        URL url = this.getClass().getClassLoader().getResource("/");
+        URL url = this.getClass().getClassLoader().getResource("");
         System.out.println(url);
         try {
             URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{url});

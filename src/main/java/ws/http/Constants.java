@@ -5,7 +5,8 @@ package ws.http;
  */
 public class Constants {
 
-    public static String WEB_ROOT = System.getProperty("user.dir");
+    //public static String WEB_ROOT = System.getProperty("user.dir");
+    public static String WEB_ROOT = Constants.class.getResource("/").toString().replaceAll("/target.*", "").replaceAll("file:/", "");  //获取根目录
 
     public static String SHUT_DOWN_COMMAND = "/shutdown";
 
@@ -14,5 +15,4 @@ public class Constants {
     public static final int DEFAULT_CONNECTION_TIMEOUT = 60000;
     public static final int PROCESSOR_IDLE = 0;
     public static final int PROCESSOR_ACTIVE = 1;
-
 }
