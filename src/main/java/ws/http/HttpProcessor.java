@@ -8,6 +8,8 @@ import ws.StaticResourceProcessor;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.Socket;
 
 /**
@@ -33,18 +35,22 @@ public class HttpProcessor {
     protected StringManager sm =
             StringManager.getManager("ws.http");
 
-    public void process(Socket socket) throws ServletException {
+    public void process(Socket socket) throws ServletException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
+
+        SocketInputStream input = null;
         try {
 
-            BufferedInputStream bufInput = new BufferedInputStream(socket.getInputStream());
-            bufInput.mark(0);
-            //new ByteArrayInputStream(new byte[2048]);
-            //InputStream clone = socket.getInputStream();
-            printRequestLines(bufInput, socket);
-            bufInput.reset();
+            InputStream ins = socket.getInputStream();
+            assertRequestNotNull(ins); //反射查看，请求为空的返回
 
-//            SocketInputStream input = new SocketInputStream(socket.getInputStream(), 2048);
-            SocketInputStream input = new SocketInputStream(bufInput, 2048);
+            BufferedInputStream bufInput = new BufferedInputStream(ins);
+            bufInput.mark(0);
+
+            printRequestLines(bufInput, socket);
+            bufInput.reset(); //重复读
+
+            //            SocketInputStream input = new SocketInputStream(socket.getInputStream(), 2048);
+            input = new SocketInputStream(bufInput, 2048);
 
             OutputStream output = socket.getOutputStream();
 
@@ -71,14 +77,36 @@ public class HttpProcessor {
                 processor.process(request, response);
             }
 
-            bufInput.close();
-            socket.close();
-            System.out.println("===应答结束==");
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            System.out.println("===应答结束==");
+            Closeable[] cArr = new Closeable[]{input, socket}; //socket注意关掉，不然会影响后续的请求
+            closeStream(cArr);
         }
     }
 
+    private void closeStream(Closeable[] cArr) {
+        for (Closeable closeable : cArr) {
+            if (closeable != null) {
+                try {
+                    closeable.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void assertRequestNotNull(InputStream ins) throws Exception {
+        Class<?> rClass = Class.forName("java.net.SocketInputStream"); //socket.getInputStream()会返回此类
+        Method available = rClass.getMethod("available");
+        available.setAccessible(true);
+        Integer len = (Integer) available.invoke(ins);
+        if (len <= 0) {
+            throw new Exception("请求数据为空");
+        }
+    }
 
     /**
      * 解析请求头
@@ -300,6 +328,7 @@ public class HttpProcessor {
 
     }
 
+    //打印请求行
     public void printRequestLines(BufferedInputStream input, Socket socket) {
         try {
 
@@ -307,21 +336,12 @@ public class HttpProcessor {
             System.out.println("服务端口号：" + socket.getLocalPort());
 
             //请求信息都写入inputstream里了
-            //InputStream inputStream = socket.getInputStream();
-
-//            InputStream inputStream = request.getStream();
             input.reset();
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(input));
+            byte[] bytes = new byte[8192];
+            int available = input.available();
+            int len = input.read(bytes, 0, available);
+            System.out.println(new String(bytes, 0, len));
 
-            //打印请求
-            for (boolean first = true; bufferedReader.ready(); ) {
-                String str = bufferedReader.readLine(); //这里阻塞：
-                if (first) {
-                    String uri = str.split(" ")[1];  //从请求头获取uri
-                    first = false;
-                }
-                System.out.println(str);
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }

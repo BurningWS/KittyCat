@@ -19,7 +19,7 @@ public class HttpConnector implements Runnable {
     public void run() {
         ServerSocket ss = null;
         try {
-            ss = new ServerSocket(8888, 0);
+            ss = new ServerSocket(8888, 1);
             System.out.println("====开始监听===");
         } catch (IOException e) {
             e.printStackTrace();
