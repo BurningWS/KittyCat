@@ -19,7 +19,7 @@ public class HttpConnector implements Runnable {
     public void run() {
         ServerSocket ss = null;
         try {
-            ss = new ServerSocket(8888, 1);
+            ss = new ServerSocket(8888, 0);
             System.out.println("====开始监听===");
         } catch (IOException e) {
             e.printStackTrace();
@@ -27,7 +27,7 @@ public class HttpConnector implements Runnable {
         }
         while (!stopped) {
             try {
-                Socket socket = ss.accept(); //注意并发
+                Socket socket = ss.accept(); //注意并发,我猜chrome可能发了不只一个请求，但只返回第一个成功的响应
                 System.out.println("===有请求===");
 
                 new HttpProcessor(this).process(socket);

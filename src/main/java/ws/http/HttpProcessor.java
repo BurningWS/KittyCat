@@ -36,11 +36,16 @@ public class HttpProcessor {
     public void process(Socket socket) throws ServletException {
         try {
 
-            //BufferedInputStream bufInput = new BufferedInputStream(socket.getInputStream());
+            BufferedInputStream bufInput = new BufferedInputStream(socket.getInputStream());
+            bufInput.mark(0);
             //new ByteArrayInputStream(new byte[2048]);
             //InputStream clone = socket.getInputStream();
+            printRequestLines(bufInput, socket);
+            bufInput.reset();
 
-            SocketInputStream input = new SocketInputStream(socket.getInputStream(), 2048);
+//            SocketInputStream input = new SocketInputStream(socket.getInputStream(), 2048);
+            SocketInputStream input = new SocketInputStream(bufInput, 2048);
+
             OutputStream output = socket.getOutputStream();
 
             request = new HttpRequest(input);
@@ -55,8 +60,6 @@ public class HttpProcessor {
             //HttpResponse httpResponse = new HttpResponse(socket);
             //httpResponse.setHttpRequest(httpRequest);
 
-            printRequestLines(request, socket);
-
             String uri = request.getRequestURI();
             //动态资源处理
             if (uri != null && uri.startsWith("/servlet/")) {
@@ -68,6 +71,7 @@ public class HttpProcessor {
                 processor.process(request, response);
             }
 
+            bufInput.close();
             socket.close();
             System.out.println("===应答结束==");
         } catch (IOException e) {
@@ -296,7 +300,7 @@ public class HttpProcessor {
 
     }
 
-    public void printRequestLines(HttpRequest request, Socket socket) {
+    public void printRequestLines(BufferedInputStream input, Socket socket) {
         try {
 
             System.out.println("处理端口号：" + socket.getPort());
@@ -304,9 +308,10 @@ public class HttpProcessor {
 
             //请求信息都写入inputstream里了
             //InputStream inputStream = socket.getInputStream();
-            InputStream inputStream = request.getStream();
-            inputStream.reset();
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+//            InputStream inputStream = request.getStream();
+            input.reset();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(input));
 
             //打印请求
             for (boolean first = true; bufferedReader.ready(); ) {
