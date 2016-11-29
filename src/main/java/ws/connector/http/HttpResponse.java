@@ -1,5 +1,8 @@
-package ws.http;
+package ws.connector.http;
 
+
+import ws.connector.ResponseStream;
+import ws.connector.ResponseWriter;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
@@ -471,7 +474,7 @@ public class HttpResponse implements HttpServletResponse {
         ResponseStream newStream = new ResponseStream(this);
         newStream.setCommit(false);
         OutputStreamWriter osr =
-                new OutputStreamWriter(newStream, getCharacterEncoding());
+                new OutputStreamWriter(newStream, getCharacterEncoding()); //在这里设置编码格式！
         writer = new ResponseWriter(osr);
         return writer;
     }

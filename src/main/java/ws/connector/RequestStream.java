@@ -1,6 +1,8 @@
-package ws.http;
+package ws.connector;
 
 import org.apache.catalina.util.StringManager;
+import ws.connector.http.Constants;
+import ws.connector.http.HttpRequest;
 
 import javax.servlet.ServletInputStream;
 import java.io.IOException;

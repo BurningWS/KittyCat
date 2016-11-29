@@ -4,8 +4,8 @@ package ws;
  * Created by wangsong09 on 2016/6/15.
  */
 
-import ws.http.HttpRequest;
-import ws.http.HttpResponse;
+import ws.connector.http.HttpRequest;
+import ws.connector.http.HttpResponse;
 
 /**
  * 静态资源处理

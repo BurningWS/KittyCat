@@ -1,5 +1,7 @@
-package ws.http;
+package ws.connector;
 
+
+import ws.connector.http.HttpResponse;
 
 import javax.servlet.ServletOutputStream;
 import java.io.IOException;

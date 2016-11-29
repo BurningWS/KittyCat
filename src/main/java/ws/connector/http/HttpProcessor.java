@@ -1,4 +1,4 @@
-package ws.http;
+package ws.connector.http;
 
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.StringManager;

@@ -1,4 +1,4 @@
-package ws.http;
+package ws.connector.http;
 
 /**
  * HTTP header enum type.

@@ -1,9 +1,10 @@
-package ws.http;
+package ws.connector;
 
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
 /**
+ * 强制刷新
  * A subclass of PrintWriter that automatically flushes each time
  * a print() or println() method is called.
  */

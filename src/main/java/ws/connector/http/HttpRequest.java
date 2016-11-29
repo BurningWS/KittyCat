@@ -1,4 +1,4 @@
-package ws.http;
+package ws.connector.http;
 
 /** this class copies methods from org.apache.catalina.connector.HttpRequestBase
  *  and org.apache.catalina.connector.http.HttpRequestImpl.
@@ -9,6 +9,7 @@ package ws.http;
 import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.util.ParameterMap;
 import org.apache.catalina.util.RequestUtil;
+import ws.connector.RequestStream;
 
 import javax.servlet.*;
 import javax.servlet.http.*;

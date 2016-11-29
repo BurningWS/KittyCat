@@ -1,6 +1,6 @@
 package ws.startup;
 
-import ws.http.HttpConnector;
+import ws.connector.http.HttpConnector;
 
 import java.io.IOException;
 

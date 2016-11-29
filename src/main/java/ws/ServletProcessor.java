@@ -2,8 +2,8 @@ package ws;
 
 
 import util.FacadeInvocationHandler;
-import ws.http.HttpRequest;
-import ws.http.HttpResponse;
+import ws.connector.http.HttpRequest;
+import ws.connector.http.HttpResponse;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;

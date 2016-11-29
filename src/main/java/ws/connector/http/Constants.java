@@ -1,4 +1,4 @@
-package ws.http;
+package ws.connector.http;
 
 /**
  * Created by wangsong09 on 2016/6/15.
