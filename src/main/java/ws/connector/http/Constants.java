@@ -21,7 +21,7 @@ public class Constants {
         if (str.startsWith("/home")) { //linuxOS
             WEB_ROOT = str;
         } else {
-            WEB_ROOT = str.replace("/", ""); //windows
+            WEB_ROOT = str.replaceFirst("/",""); //windows
         }
     }
 }
