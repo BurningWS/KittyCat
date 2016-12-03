@@ -70,6 +70,7 @@ import java.io.PrintWriter;
 import java.util.Locale;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletResponse;
+import org.apache.catalina.Response;
 
 
 /**

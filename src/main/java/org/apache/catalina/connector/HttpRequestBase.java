@@ -20,7 +20,12 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
+import org.apache.catalina.Globals;
+import org.apache.catalina.HttpRequest;
+import org.apache.catalina.Logger;
+import org.apache.catalina.Manager;
+import org.apache.catalina.Realm;
+import org.apache.catalina.Session;
 import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.util.ParameterMap;
 import org.apache.catalina.util.RequestUtil;

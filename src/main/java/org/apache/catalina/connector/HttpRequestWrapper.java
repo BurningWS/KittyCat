@@ -68,6 +68,7 @@ package org.apache.catalina.connector;
 import java.security.Principal;
 import java.util.Locale;
 import javax.servlet.http.Cookie;
+import org.apache.catalina.HttpRequest;
 
 
 /**

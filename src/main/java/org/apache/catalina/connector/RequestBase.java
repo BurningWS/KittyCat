@@ -17,7 +17,11 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
-
+import org.apache.catalina.Connector;
+import org.apache.catalina.Context;
+import org.apache.catalina.Request;
+import org.apache.catalina.Response;
+import org.apache.catalina.Wrapper;
 import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.StringManager;

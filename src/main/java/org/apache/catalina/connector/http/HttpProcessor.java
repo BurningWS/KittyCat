@@ -15,7 +15,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import org.apache.catalina.Globals;
+import org.apache.catalina.HttpRequest;
+import org.apache.catalina.Lifecycle;
+import org.apache.catalina.LifecycleException;
+import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.Logger;
 import org.apache.catalina.util.FastHttpDateFormat;
 import org.apache.catalina.util.LifecycleSupport;
 import org.apache.catalina.util.RequestUtil;

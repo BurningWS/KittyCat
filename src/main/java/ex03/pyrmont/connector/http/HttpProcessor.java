@@ -10,7 +10,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 
 import org.apache.catalina.util.RequestUtil;
-import org.apache.catalina.util.StringManager;
 
 /* this class used to be called HttpServer */
 public class HttpProcessor {

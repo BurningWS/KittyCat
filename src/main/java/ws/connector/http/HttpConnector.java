@@ -12,6 +12,15 @@ import java.net.Socket;
  */
 public class HttpConnector implements Runnable {
 
+    /**
+     * Timeout value on the incoming connection.
+     * Note : a value of 0 means infinite timeout.
+     */
+    private int connectionTimeout = Constants.DEFAULT_CONNECTION_TIMEOUT;
+    /**
+     * Use TCP no delay ?
+     */
+    private boolean tcpNoDelay = true;
     @Setter
     private static boolean stopped = false;
 
@@ -30,6 +39,8 @@ public class HttpConnector implements Runnable {
                 Socket socket = ss.accept(); //注意并发,我猜chrome可能发了不只一个请求，但只返回第一个成功的响应
                 System.out.println("===有请求===");
 
+                socket.setSoTimeout(connectionTimeout); //这个可以解决上面的问题。没请求则返回
+                socket.setTcpNoDelay(tcpNoDelay);
                 new HttpProcessor(this).process(socket);
             } catch (Exception e) {
                 e.printStackTrace();

@@ -65,6 +65,9 @@
 package org.apache.catalina.connector;
 
 
+import org.apache.catalina.HttpResponse;
+
+
 /**
  * Abstract convenience class that wraps a Catalina-internal <b>HttpResponse</b>
  * object.  By default, all methods are delegated to the wrapped response,

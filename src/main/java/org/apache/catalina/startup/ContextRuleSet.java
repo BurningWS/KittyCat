@@ -63,7 +63,8 @@
 package org.apache.catalina.startup;
 
 import java.lang.reflect.Constructor;
-
+import org.apache.catalina.Container;
+import org.apache.catalina.Loader;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.Rule;
 import org.apache.commons.digester.RuleSetBase;

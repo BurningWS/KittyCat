@@ -81,6 +81,11 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.apache.catalina.Connector;
+import org.apache.catalina.Context;
+import org.apache.catalina.HttpRequest;
+import org.apache.catalina.Response;
+import org.apache.catalina.Wrapper;
 
 /**
  * 

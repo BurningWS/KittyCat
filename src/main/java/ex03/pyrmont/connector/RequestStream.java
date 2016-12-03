@@ -5,7 +5,6 @@ import ex03.pyrmont.connector.http.HttpRequest;
 import java.io.InputStream;
 import java.io.IOException;
 import javax.servlet.ServletInputStream;
-import org.apache.catalina.util.StringManager;
 
 
 /**

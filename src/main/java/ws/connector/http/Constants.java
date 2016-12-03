@@ -12,7 +12,7 @@ public class Constants {
 
     public static final String Package = "ws.http";
 
-    public static final int DEFAULT_CONNECTION_TIMEOUT = 60000;
+    public static final int DEFAULT_CONNECTION_TIMEOUT = 5000; //60000
     public static final int PROCESSOR_IDLE = 0;
     public static final int PROCESSOR_ACTIVE = 1;
 

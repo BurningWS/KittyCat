@@ -77,7 +77,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import org.apache.catalina.InstanceEvent;
 import org.apache.catalina.util.InstanceSupport;
 import org.apache.catalina.util.StringManager;
 

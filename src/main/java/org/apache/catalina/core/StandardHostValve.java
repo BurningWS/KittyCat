@@ -69,7 +69,12 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import org.apache.catalina.Context;
+import org.apache.catalina.Manager;
+import org.apache.catalina.Request;
+import org.apache.catalina.Response;
+import org.apache.catalina.Session;
+import org.apache.catalina.ValveContext;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ValveBase;
 

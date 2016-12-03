@@ -1,24 +1,32 @@
 package org.apache.catalina.connector.http;
 
 
-import org.apache.catalina.Connector;
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.net.DefaultServerSocketFactory;
-import org.apache.catalina.util.LifecycleSupport;
-import org.apache.catalina.util.StringManager;
-
-import javax.net.ServerSocketFactory;
 import java.io.IOException;
 import java.net.BindException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.security.*;
-import java.security.cert.CertificateException;
+import java.security.AccessControlException;
 import java.util.Stack;
 import java.util.Vector;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.UnrecoverableKeyException;
+import java.security.KeyManagementException;
+import org.apache.catalina.Connector;
+import org.apache.catalina.Container;
+import org.apache.catalina.Lifecycle;
+import org.apache.catalina.LifecycleException;
+import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.Logger;
+import org.apache.catalina.Request;
+import org.apache.catalina.Response;
+import org.apache.catalina.Service;
+import org.apache.catalina.net.DefaultServerSocketFactory;
+import org.apache.catalina.net.ServerSocketFactory;
+import org.apache.catalina.util.LifecycleSupport;
+import org.apache.catalina.util.StringManager;
 
 
 /**

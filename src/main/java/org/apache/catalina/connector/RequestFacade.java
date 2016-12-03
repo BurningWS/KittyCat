@@ -73,6 +73,7 @@ import java.util.Locale;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.RequestDispatcher;
+import org.apache.catalina.Request;
 
 
 /**

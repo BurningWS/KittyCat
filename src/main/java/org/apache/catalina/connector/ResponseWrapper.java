@@ -70,6 +70,10 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletResponse;
+import org.apache.catalina.Connector;
+import org.apache.catalina.Context;
+import org.apache.catalina.Request;
+import org.apache.catalina.Response;
 
 
 /**

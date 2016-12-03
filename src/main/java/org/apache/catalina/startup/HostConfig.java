@@ -80,6 +80,14 @@ import java.util.jar.JarFile;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import org.apache.naming.resources.ResourceAttributes;
+import org.apache.catalina.Context;
+import org.apache.catalina.Deployer;
+import org.apache.catalina.Host;
+import org.apache.catalina.Lifecycle;
+import org.apache.catalina.LifecycleEvent;
+import org.apache.catalina.LifecycleException;
+import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.Logger;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.util.StringManager;
 

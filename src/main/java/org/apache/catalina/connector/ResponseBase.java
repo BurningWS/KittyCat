@@ -8,7 +8,10 @@ import java.io.PrintWriter;
 import java.util.Locale;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletResponse;
-
+import org.apache.catalina.Connector;
+import org.apache.catalina.Context;
+import org.apache.catalina.Request;
+import org.apache.catalina.Response;
 import org.apache.catalina.util.CharsetMapper;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.StringManager;

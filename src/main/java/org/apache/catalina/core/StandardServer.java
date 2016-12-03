@@ -88,6 +88,27 @@ import javax.naming.directory.DirContext;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
+import org.apache.catalina.Connector;
+import org.apache.catalina.Container;
+import org.apache.catalina.Context;
+import org.apache.catalina.DefaultContext;
+import org.apache.catalina.Engine;
+import org.apache.catalina.Host;
+import org.apache.catalina.Lifecycle;
+import org.apache.catalina.LifecycleException;
+import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.Loader;
+import org.apache.catalina.Logger;
+import org.apache.catalina.Manager;
+import org.apache.catalina.Pipeline;
+import org.apache.catalina.Realm;
+import org.apache.catalina.Server;
+import org.apache.catalina.ServerFactory;
+import org.apache.catalina.Service;
+import org.apache.catalina.Store;
+import org.apache.catalina.Valve;
+import org.apache.catalina.core.StandardEngine;
+import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.ApplicationParameter;
 import org.apache.catalina.deploy.NamingResources;
 import org.apache.catalina.deploy.ContextEjb;

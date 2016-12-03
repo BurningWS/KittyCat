@@ -33,7 +33,7 @@ public class HttpProcessor {
      * The string manager for this package.
      */
     protected StringManager sm =
-            StringManager.getManager("ws.http");
+            StringManager.getManager("ws.connector.http");
 
     public void process(Socket socket) throws ServletException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
 
@@ -41,7 +41,7 @@ public class HttpProcessor {
         try {
 
             InputStream ins = socket.getInputStream();
-            assertRequestNotNull(ins); //反射查看，请求为空的返回
+            //assertRequestNotNull(ins); //反射查看，请求为空的返回
 
             BufferedInputStream bufInput = new BufferedInputStream(ins);
             bufInput.mark(0);

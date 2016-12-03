@@ -68,7 +68,7 @@ package org.apache.catalina.connector;
 import java.io.InputStream;
 import java.io.IOException;
 import javax.servlet.ServletInputStream;
-
+import org.apache.catalina.Request;
 import org.apache.catalina.util.StringManager;
 
 

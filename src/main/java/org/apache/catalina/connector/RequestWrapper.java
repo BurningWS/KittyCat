@@ -70,6 +70,11 @@ import java.io.IOException;
 import java.net.Socket;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
+import org.apache.catalina.Connector;
+import org.apache.catalina.Context;
+import org.apache.catalina.Request;
+import org.apache.catalina.Response;
+import org.apache.catalina.Wrapper;
 
 
 /**

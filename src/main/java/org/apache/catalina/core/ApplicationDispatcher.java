@@ -80,9 +80,18 @@ import javax.servlet.ServletResponseWrapper;
 import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import org.apache.catalina.Context;
+import org.apache.catalina.Globals;
+import org.apache.catalina.HttpRequest;
+import org.apache.catalina.HttpResponse;
+import org.apache.catalina.InstanceEvent;
+import org.apache.catalina.Logger;
+import org.apache.catalina.Request;
+import org.apache.catalina.Response;
+import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.RequestFacade;
 import org.apache.catalina.connector.ResponseFacade;
+import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.util.InstanceSupport;
 import org.apache.catalina.util.StringManager;
 
