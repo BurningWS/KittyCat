@@ -1,5 +1,8 @@
 package ws.connector.http;
 
+import org.apache.catalina.Lifecycle;
+import org.apache.catalina.LifecycleException;
+import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.StringManager;
 import ws.ServletProcessor;
@@ -15,12 +18,14 @@ import java.net.Socket;
 /**
  * Created by wangsong09 on 2016/6/17.
  */
-public class HttpProcessor {
+public class HttpProcessor implements Lifecycle {
 
-    public HttpProcessor(HttpConnector connector) {
+    public HttpProcessor(HttpConnector connector, int id) {
         this.connector = connector;
+        this.id = id;
     }
 
+    private int id;
     private HttpConnector connector;
 
     private HttpRequestLine requestLine = new HttpRequestLine();  //请求行
@@ -33,7 +38,7 @@ public class HttpProcessor {
      * The string manager for this package.
      */
     protected StringManager sm =
-            StringManager.getManager("ws.connector.http");
+            StringManager.getManager(Constants.Package);
 
     public void process(Socket socket) throws ServletException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
 
@@ -345,5 +350,30 @@ public class HttpProcessor {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void addLifecycleListener(LifecycleListener listener) {
+
+    }
+
+    @Override
+    public LifecycleListener[] findLifecycleListeners() {
+        return new LifecycleListener[0];
+    }
+
+    @Override
+    public void removeLifecycleListener(LifecycleListener listener) {
+
+    }
+
+    @Override
+    public void start() throws LifecycleException {
+
+    }
+
+    @Override
+    public void stop() throws LifecycleException {
+
     }
 }
