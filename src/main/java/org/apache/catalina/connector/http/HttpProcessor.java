@@ -1,32 +1,19 @@
 package org.apache.catalina.connector.http;
 
 
-import java.io.EOFException;
-import java.io.InterruptedIOException;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import org.apache.catalina.*;
+import org.apache.catalina.util.*;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.TreeMap;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.catalina.Globals;
-import org.apache.catalina.HttpRequest;
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.Logger;
-import org.apache.catalina.util.FastHttpDateFormat;
-import org.apache.catalina.util.LifecycleSupport;
-import org.apache.catalina.util.RequestUtil;
-import org.apache.catalina.util.ServerInfo;
-import org.apache.catalina.util.StringManager;
-import org.apache.catalina.util.StringParser;
 
 
 /**
@@ -285,7 +272,7 @@ final class HttpProcessor
      *
      * @param socket TCP socket to process
      */
-    synchronized void assign(Socket socket) {
+    synchronized void assign(Socket socket) { //传入socket，并唤醒线程
 
         // Wait for the Processor to get the previous Socket
         while (available) {
@@ -298,7 +285,7 @@ final class HttpProcessor
         // Store the newly available Socket and notify our thread
         this.socket = socket;
         available = true;
-        notifyAll();
+        notifyAll(); // 唤醒线程，进行处理
 
         if ((debug >= 1) && (socket != null))
             log(" An incoming request is being assigned");
@@ -318,7 +305,7 @@ final class HttpProcessor
         // Wait for the Connector to provide a new Socket
         while (!available) {
             try {
-                wait();
+                wait();  //首次进入会等待
             } catch (InterruptedException e) {
             }
         }

@@ -2,7 +2,6 @@ package test;
 
 import javax.servlet.*;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
 /**
@@ -26,6 +25,11 @@ public class TestServlet implements Servlet {
         PrintWriter pw = res.getWriter();
 
         pw.print("TestServlet正在处理");
+        try {
+            Thread.sleep(2000); //让多线程处理展示明显
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         pw.close();
     }
 

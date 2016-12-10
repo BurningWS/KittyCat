@@ -1,5 +1,7 @@
 package ws.connector.http;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
@@ -18,7 +20,16 @@ import java.net.Socket;
 /**
  * Created by wangsong09 on 2016/6/17.
  */
-public class HttpProcessor implements Lifecycle {
+public class HttpProcessor implements Lifecycle, Runnable {
+
+    @Getter
+    @Setter
+    private boolean stopped = false;
+
+    private boolean available = false;
+
+    @Setter
+    private Socket socket;
 
     public HttpProcessor(HttpConnector connector, int id) {
         this.connector = connector;
@@ -369,11 +380,83 @@ public class HttpProcessor implements Lifecycle {
 
     @Override
     public void start() throws LifecycleException {
+        threadStart();
+    }
 
+    private void threadStart() {
+        Thread t = new Thread(this);
+        t.setDaemon(true);
+        t.start();
     }
 
     @Override
     public void stop() throws LifecycleException {
 
+    }
+
+    @Override
+    public String toString() {
+        return "HttpProcessor{" +
+                "id=" + id +
+                ", connector=" + connector +
+                '}';
+    }
+
+    @Override
+    public void run() {
+        while (!stopped) {
+            Socket s = await();
+            try {
+                System.out.println(this + "正在处理");
+                process(s);
+                connector.recycle(this);
+            } catch (ServletException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    s.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+    }
+
+    private synchronized Socket await() { //加synchronized是为了唤醒线程和变量可见
+        while (!available) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        available = false;
+        notifyAll(); //为了防止在 available 为 true 的时候另一个 socket 到来
+        return socket;
+    }
+
+    public synchronized void assign(Socket socket) {
+        while (available) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        available = true;
+        this.socket = socket;
+        notifyAll();  //让解析线程继续
     }
 }

@@ -57,9 +57,11 @@ public class HttpConnector implements Runnable, Lifecycle {
                 socket.setSoTimeout(connectionTimeout); //这个可以解决上面的问题。没请求则返回
                 socket.setTcpNoDelay(tcpNoDelay);
 
-                HttpProcessor processor = createProcessor();
+                HttpProcessor processor = createProcessor(); //开启解析线程
                 if (processor != null) {
-                    processor.process(socket);
+                    //processor.process(socket);
+                    processor.assign(socket);
+
                 } else {
                     socket.close();
                     throw new Exception(sm.getString("httpConnector.noProcessor"));
@@ -72,24 +74,23 @@ public class HttpConnector implements Runnable, Lifecycle {
         }
     }
 
-    private HttpProcessor createProcessor() {
+    private HttpProcessor createProcessor() throws LifecycleException {
         synchronized (processors) {
             if (processors.size() > 0) {
                 return processors.pop();
             }
-            if (curProcessors < maxProcessors) {
-                return newProcessor();
+            if (curProcessors < maxProcessors || maxProcessors < 0) {
+                HttpProcessor processor = newProcessor();
+                return processor;
             }
-            if (maxProcessors < 0) {
-                return newProcessor();
-            } else {
-                return null;
-            }
+            return null;
         }
     }
 
-    private HttpProcessor newProcessor() {
-        return new HttpProcessor(this, curProcessors++);
+    private HttpProcessor newProcessor() throws LifecycleException {
+        HttpProcessor processor = new HttpProcessor(this, curProcessors++);
+        processor.start(); //开启解析线程
+        return processor;
     }
 
     @Override
@@ -114,5 +115,9 @@ public class HttpConnector implements Runnable, Lifecycle {
     @Override
     public void stop() throws LifecycleException {
 
+    }
+
+    public void recycle(HttpProcessor httpProcessor) {
+        processors.push(httpProcessor);
     }
 }
